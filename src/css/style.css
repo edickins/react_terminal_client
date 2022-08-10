@@ -1,0 +1,29 @@
+* {
+	box-sizing: border-box;
+}
+
+:root {
+	background-color: #000;
+}
+
+body {
+	height: 100vh;
+	color: #25e825;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+/* App */
+.App {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+/* Terminal Container */
+.terminal {
+	height: 80%;
+	width: 80%;
+	border: 2px solid #25e825;
+	overflow: hidden;
+}
