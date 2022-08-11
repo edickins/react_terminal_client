@@ -22,8 +22,20 @@ body {
 
 /* Terminal Container */
 .terminal {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
 	height: 80%;
 	width: 80%;
 	border: 2px solid #25e825;
 	overflow: hidden;
+}
+
+.scroller {
+	width: 100%;
+	bottom: 0;
+}
+
+.terminalText {
+	padding: 0.5em 2em;
 }
