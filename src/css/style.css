@@ -39,3 +39,7 @@ body {
 .terminalText {
 	padding: 0.5em 2em;
 }
+
+[data-typing-effect] {
+	visibility: hidden;
+}
