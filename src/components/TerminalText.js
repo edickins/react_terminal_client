@@ -1,10 +1,11 @@
 import React from 'react';
 
-export default function TerminalText(props) {
-	const ref = React.useRef(null);
-	return (
-		<div className='terminalText'>
-			<p>{props.text}</p>
-		</div>
-	);
-}
+// this functional component is using forwardRef
+// which exposes a ref to itself accessed through el.ref.current
+const TerminalText = React.forwardRef((props, ref) => (
+	<div className='terminalText' ref={ref}>
+		<p>{props.text}</p>
+	</div>
+));
+
+export default TerminalText;
