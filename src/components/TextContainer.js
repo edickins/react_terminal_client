@@ -5,13 +5,12 @@ import typingEffect from 'typing-effect';
 
 export default function TextContainer(props) {
 	const [terminalTexts, setTerminalTexts] = React.useState([]);
-	const [count, setCount] = React.useState(0);
 
 	// filter all terminalText elements accessed by ref
 	// and return all of those reasonably still on screen
 	// offsetTop value accommodates resized the browser window
 	// and allows for older text elements to remain in the stack
-	const getOnScreenTextElements = React.useCallback(() => {
+	const getAllTextElementsInView = React.useCallback(() => {
 		let onScreenElements = [];
 		if (terminalTexts.length > 0) {
 			onScreenElements = terminalTexts.filter(el => {
@@ -21,7 +20,7 @@ export default function TextContainer(props) {
 		return onScreenElements;
 	}, [terminalTexts]);
 
-	// hit up the API and get some Markov Chain generated text
+	// hit the API and get some Markov Chain generated text
 	const getMarkovText = async () => {
 		const res = await fetch('http://localhost:5000/api/v1/markovText');
 		const body = await res.json();
@@ -31,11 +30,9 @@ export default function TextContainer(props) {
 	};
 
 	// create a new TerminalText element
-	// passing text, key and ref
+	// passing it text, key and ref props
 	const createTerminalTextEl = React.useCallback(async () => {
-		setCount(count + 1);
-
-		const onScreenElements = getOnScreenTextElements();
+		const onScreenElements = getAllTextElementsInView();
 		const ref = React.createRef();
 		const markovText = await getMarkovText();
 		setTerminalTexts([
@@ -47,26 +44,29 @@ export default function TextContainer(props) {
 				ref={ref}
 			/>,
 		]);
-	}, [getOnScreenTextElements, count]);
+	}, [getAllTextElementsInView]);
 
-	const doSomething = () => {
-		console.log(`doing someting`);
+	// set a timeout after each text animation has completed - or on initial page load
+	const startTimer = () => {
+		setTimeout(createTerminalTextEl, 2000);
 	};
 
-	// setTimeout to create a new terminalText element each time the terminalTexts Array is updated.
+	// called once on App startup
 	React.useEffect(() => {
-		if (count > 5) return;
+		startTimer();
+	}, []);
 
-		const timer = setTimeout(createTerminalTextEl, 1000);
-		return () => clearTimeout(timer);
-	}, [terminalTexts, createTerminalTextEl, count]);
-
+	// called every time the screen re-renders.
+	// looks for any paragraphs that need to be animated.
+	// on Promise resolution startTimer is called again.
 	React.useEffect(() => {
-		if (terminalTexts.length > 0)
-			typingEffect(document.querySelector('[data-typing-effect]')).then(() =>
-				doSomething()
-			);
-	}, [terminalTexts]);
+		const textsToAnimate = document.querySelector('[data-typing-effect]');
+		if (textsToAnimate !== null) {
+			typingEffect(textsToAnimate).then(() => {
+				startTimer();
+			});
+		}
+	});
 
 	// render function
 	return <div className='scroller'>{terminalTexts}</div>;
