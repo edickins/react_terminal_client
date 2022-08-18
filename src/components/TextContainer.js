@@ -1,5 +1,6 @@
 import React from 'react';
 import TerminalText from './TerminalText';
+import TerminalTextPre from './TerminalTextPre';
 import { nanoid } from 'nanoid';
 import typingEffect from 'typing-effect';
 
@@ -23,19 +24,30 @@ export default function TextContainer(props) {
 
 	// hit the API and get some Markov Chain generated text
 	const getMarkovText = async () => {
-		const res = await fetch('http://localhost:5000/api/v1/markovText');
-		const body = await res.json();
-		if (body.success === true) {
-			return body.texts.items[0].txt;
+		try {
+			const res = await fetch(
+				'http://cdn.bleepbloop.net/content/api/v1/markovText'
+			);
+			const body = await res.json();
+			if (body.success === true) {
+				return body.texts.items[0].txt;
+			}
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
 	// hit the API and get multiline text from the express server
 	const getMultilineText = async () => {
-		const res = await fetch('http://localhost:5000/api/v1/ascii');
-		const body = await res.json();
-		if (body.success === true) {
-			console.log(`multiline texts : ${body.texts}`);
+		try {
+			const res = await fetch('http://cdn.bleepbloop.net/content/api/v1/ascii');
+			const body = await res.json();
+			if (body.success === true) {
+				console.log(`multiline texts : ${body.texts}`);
+				setMultilineTexts(body.texts.items);
+			}
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
@@ -61,8 +73,19 @@ export default function TextContainer(props) {
 
 	// set a timeout after each text animation has completed - or on initial page load
 	const startTimer = async () => {
-		getMultilineText();
-		let text = await getText();
+		//if (Math.random() > 0.5 && multilineTexts.length === 0) {
+		//getMultilineText();
+		//}
+
+		let text;
+
+		if (multilineTexts.length > 0) {
+			const item = multilineTexts.shift();
+			text = item.txt;
+		} else {
+			text = await getText();
+		}
+
 		setTimeout(() => {
 			createTerminalTextEl(text);
 		}, 2000);

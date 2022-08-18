@@ -40,6 +40,10 @@ body {
 	padding: 0.5em 2em;
 }
 
+.terminalText p {
+	letter-spacing: 3;
+}
+
 [data-typing-effect] {
 	visibility: hidden;
 }
