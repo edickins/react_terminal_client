@@ -26,7 +26,7 @@ export default function TextContainer(props) {
 	const getMarkovText = async () => {
 		try {
 			const res = await fetch(
-				'http://cdn.bleepbloop.net/content/api/v1/markovText'
+				'https://cdn.bleepbloop.net/content/api/v1/markovText'
 			);
 			const body = await res.json();
 			if (body.success === true) {
