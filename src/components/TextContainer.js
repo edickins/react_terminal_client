@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import typingEffect from 'typing-effect';
 
 export default function TextContainer(props) {
+	const [markovTexts, setMarkovTexts] = React.useState([]);
 	const [terminalTexts, setTerminalTexts] = React.useState([]);
 	const [multilineTexts, setMultilineTexts] = React.useState([]);
 
@@ -72,7 +73,7 @@ export default function TextContainer(props) {
 	);
 
 	// set a timeout after each text animation has completed - or on initial page load
-	const startTimer = async () => {
+	const startTimer = async (num = 1) => {
 		//if (Math.random() > 0.5 && multilineTexts.length === 0) {
 		//getMultilineText();
 		//}
@@ -92,7 +93,8 @@ export default function TextContainer(props) {
 	};
 
 	const getText = async () => {
-		return await getMarkovText();
+		const texts = await getMarkovText();
+		setMarkovTexts(prevTexts => [...prevTexts, ...texts]);
 	};
 
 	// called once on App startup
