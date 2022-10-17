@@ -1,23 +1,25 @@
 import React from 'react';
 import TerminalText from './TerminalText';
+import TerminalTextPre from './TerminalTextPre';
 import { nanoid } from 'nanoid';
 import typingEffect from 'typing-effect';
+import logoAscii from '../data/asciiBleepBloop';
 
 export default function TextContainer(props) {
 	const [startAutomatedText, setStartAutomatedText] = React.useState(false);
 	const [terminalTexts, setTerminalTexts] = React.useState([]);
 
 	const init = async () => {
-		const texts = await getMarkovText(50);
+		// const texts = await getMarkovText(50);
+		const texts = logoAscii;
 		const textEls = texts.map(text => {
 			const ref = React.createRef();
 			return (
-				<TerminalText
+				<TerminalTextPre
 					className='terminalText'
 					text={`${text.txt}`}
 					key={nanoid()}
 					ref={ref}
-					useTypeEffect={false}
 				/>
 			);
 		});
@@ -38,8 +40,8 @@ export default function TextContainer(props) {
 		return onScreenElements;
 	}, [terminalTexts]);
 
-	// set a timeout after each text animation has completed - or on initial page load
-	const startTimer = React.useCallback(async () => {
+	// set a timeout after each text animation has completed
+	const startTextTimer = React.useCallback(async () => {
 		let textObj = await getText();
 
 		setTimeout(() => {
@@ -85,8 +87,6 @@ export default function TextContainer(props) {
 
 	const getText = async (num = 1) => {
 		const texts = await getMarkovText(num);
-
-		console.log(`getText text=${texts[0].txt}`);
 		return texts[0];
 	};
 
@@ -95,12 +95,13 @@ export default function TextContainer(props) {
 		init();
 	}, []);
 
+	// called when init() is completed.
 	React.useEffect(() => {
 		if (startAutomatedText === true) {
-			startTimer();
+			startTextTimer();
 			setStartAutomatedText(false);
 		}
-	}, [startAutomatedText, startTimer]);
+	}, [startAutomatedText, startTextTimer]);
 
 	// called every time the screen re-renders.
 	// looks for any paragraphs that need to be animated.
@@ -109,10 +110,16 @@ export default function TextContainer(props) {
 		const textsToAnimate = document.querySelector('[data-typing-effect]');
 		if (textsToAnimate !== null) {
 			typingEffect(textsToAnimate).then(() => {
-				startTimer();
+				const rand = Math.random();
+				if (rand > 0.15) {
+					startTextTimer();
+				} else {
+					setStartAutomatedText(false);
+					init();
+				}
 			});
 		}
-	}, [startTimer]);
+	}, [startTextTimer]);
 
 	// render function
 	return <div className='scroller'>{terminalTexts}</div>;

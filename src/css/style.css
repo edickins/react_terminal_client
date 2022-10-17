@@ -47,3 +47,11 @@ body {
 [data-typing-effect] {
 	visibility: hidden;
 }
+
+.terminalTextPre {
+	padding: 0 2em;
+}
+
+.terminalTextPre pre {
+	font-size: 1vw;
+}
