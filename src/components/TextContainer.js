@@ -9,9 +9,9 @@ export default function TextContainer(props) {
 	const [startAutomatedText, setStartAutomatedText] = React.useState(false);
 	const [terminalTexts, setTerminalTexts] = React.useState([]);
 
-	const init = async () => {
-		// const texts = await getMarkovText(50);
-		const texts = logoAscii;
+	async function init() {
+		let texts = logoAscii;
+
 		const textEls = texts.map(text => {
 			const ref = React.createRef();
 			return (
@@ -25,7 +25,7 @@ export default function TextContainer(props) {
 		});
 		setTerminalTexts(prevTextEls => [...prevTextEls, ...textEls]);
 		setStartAutomatedText(true);
-	};
+	}
 	// filter all terminalText elements accessed by ref
 	// and return all of those reasonably still on screen
 	// offsetTop value accommodates resized the browser window
@@ -43,14 +43,13 @@ export default function TextContainer(props) {
 	// set a timeout after each text animation has completed
 	const startTextTimer = React.useCallback(async () => {
 		let textObj = await getText();
-
 		setTimeout(() => {
 			createTerminalTextEl({ text: `${textObj.txt}`, useTypeEffect: true });
 		}, 2000);
 	});
 
 	// hit the API and get some Markov Chain generated text
-	const getMarkovText = async (num = 1) => {
+	async function getMarkovText(num = 1) {
 		const MARKOV_URI = `${process.env.REACT_APP_BASE_URI}/api/v1/markovText?num=${num}`;
 		try {
 			const res = await fetch(MARKOV_URI);
@@ -61,7 +60,7 @@ export default function TextContainer(props) {
 		} catch (err) {
 			console.log(err);
 		}
-	};
+	}
 
 	// create a new TerminalText element
 	// passing it text, key and ref props
@@ -85,10 +84,10 @@ export default function TextContainer(props) {
 		[getAllTextElementsInView]
 	);
 
-	const getText = async (num = 1) => {
+	async function getText(num = 1) {
 		const texts = await getMarkovText(num);
 		return texts[0];
-	};
+	}
 
 	// called once on App startup
 	React.useEffect(() => {
@@ -105,13 +104,13 @@ export default function TextContainer(props) {
 
 	// called every time the screen re-renders.
 	// looks for any paragraphs that need to be animated.
-	// on Promise resolution startTimer is called again.
+	// on Promise resolution startTextTimer is called again.
 	React.useEffect(() => {
-		const textsToAnimate = document.querySelector('[data-typing-effect]');
-		if (textsToAnimate !== null) {
-			typingEffect(textsToAnimate).then(() => {
+		const textToAnimate = document.querySelector('[data-typing-effect]');
+		if (textToAnimate !== null) {
+			typingEffect(textToAnimate).then(() => {
 				const rand = Math.random();
-				if (rand > 0.15) {
+				if (rand > 0.1) {
 					startTextTimer();
 				} else {
 					setStartAutomatedText(false);
