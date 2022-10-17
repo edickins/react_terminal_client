@@ -93,8 +93,8 @@ export default function TextContainer(props) {
 	};
 
 	const getText = async () => {
-		const texts = await getMarkovText();
-		setMarkovTexts(prevTexts => [...prevTexts, ...texts]);
+		const text = await getMarkovText();
+		return text;
 	};
 
 	// called once on App startup
