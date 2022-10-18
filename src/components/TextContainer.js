@@ -55,39 +55,35 @@ export default function TextContainer(props) {
 			const res = await fetch(MARKOV_URI);
 			const body = await res.json();
 			if (body.success === true) {
-				return body.texts.items;
+				return body.data;
 			}
 		} catch (err) {
 			console.log(err);
 		}
 	}
 
-	// create a new TerminalText element
-	// passing it text, key and ref props
-	const createTerminalTextEl = React.useCallback(
-		async initObj => {
-			const { text, useTypeEffect } = initObj;
-			const onScreenElements = getAllTextElementsInView();
-			const ref = React.createRef();
-
-			setTerminalTexts([
-				...onScreenElements,
-				<TerminalText
-					className='terminalText'
-					text={`${text}`}
-					key={nanoid()}
-					ref={ref}
-					useTypeEffect={useTypeEffect}
-				/>,
-			]);
-		},
-		[getAllTextElementsInView]
-	);
-
-	async function getText(num = 1) {
+	const getText = React.useCallback(async (num = 1) => {
 		const texts = await getMarkovText(num);
 		return texts[0];
-	}
+	});
+	// create a new TerminalText element
+	// passing it text, key and ref props
+	const createTerminalTextEl = React.useCallback(async () => {
+		let textObj = await getText();
+		const onScreenElements = getAllTextElementsInView();
+		const ref = React.createRef();
+
+		setTerminalTexts([
+			...onScreenElements,
+			<TerminalText
+				className='terminalText'
+				text={textObj.txt}
+				key={nanoid()}
+				ref={ref}
+				useTypeEffect={true}
+			/>,
+		]);
+	}, [getAllTextElementsInView, getText]);
 
 	// called once on App startup
 	React.useEffect(() => {
@@ -110,7 +106,7 @@ export default function TextContainer(props) {
 		if (textToAnimate !== null) {
 			typingEffect(textToAnimate).then(() => {
 				const rand = Math.random();
-				if (rand > 0.1) {
+				if (rand > 0.05) {
 					startTextTimer();
 				} else {
 					setStartAutomatedText(false);
@@ -118,7 +114,7 @@ export default function TextContainer(props) {
 				}
 			});
 		}
-	}, [startTextTimer]);
+	});
 
 	// render function
 	return <div className='scroller'>{terminalTexts}</div>;
