@@ -4,10 +4,12 @@ import TerminalTextPre from './TerminalTextPre';
 import { nanoid } from 'nanoid';
 import typingEffect from 'typing-effect';
 import logoAscii from '../data/asciiBleepBloop';
+import useMarkovText from '../hooks/useMarkovText';
 
 export default function TextContainer(props) {
 	const [startAutomatedText, setStartAutomatedText] = React.useState(false);
 	const [terminalTexts, setTerminalTexts] = React.useState([]);
+	const [getMarkovText] = useMarkovText();
 
 	async function init() {
 		let texts = logoAscii;
@@ -48,22 +50,16 @@ export default function TextContainer(props) {
 		}, 2000);
 	});
 
-	// hit the API and get some Markov Chain generated text
-	async function getMarkovText(num = 1) {
-		const MARKOV_URI = `${process.env.REACT_APP_BASE_URI}/api/v1/markovText?num=${num}`;
-		try {
-			const res = await fetch(MARKOV_URI);
-			const body = await res.json();
-			if (body.success === true) {
-				return body.data;
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	}
-
 	const getText = React.useCallback(async (num = 1) => {
-		const texts = await getMarkovText(num);
+		const MARKOV_URI = `${process.env.REACT_APP_BASE_URI}/api/v1/markovText/`;
+		const initOjb = {
+			uri: MARKOV_URI,
+			queryStr: {
+				num: num,
+			},
+		};
+
+		const texts = await getMarkovText(initOjb);
 		return texts[0];
 	});
 	// create a new TerminalText element
