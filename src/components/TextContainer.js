@@ -62,8 +62,7 @@ export default function TextContainer(props) {
 		const texts = await getMarkovText(initOjb);
 		return texts[0];
 	});
-	// create a new TerminalText element
-	// passing it text, key and ref props
+
 	const createTerminalTextEl = React.useCallback(async () => {
 		let textObj = await getText();
 		const onScreenElements = getAllTextElementsInView();

@@ -7,8 +7,6 @@ const useMarkovText = () => {
 			uri = uri + `${key}=${value}&`;
 		}
 
-		console.log(uri);
-
 		try {
 			const res = await fetch(uri);
 			const body = await res.json();
